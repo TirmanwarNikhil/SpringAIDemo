@@ -14,10 +14,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Ollama Chat", description = "Ollama AI Chat API endpoints")
 @RequestMapping("/api/ollama")
+@Slf4j
 public class OllamaController {
 
 	private ChatClient chatClient;
@@ -30,9 +32,14 @@ public class OllamaController {
 	@Operation(summary = "Get AI Answer", description = "Send a message to the Ollama AI model and get a response")
 	@ApiResponse(responseCode = "200", description = "Successful response", content = @Content(mediaType = "application/json", schema = @Schema(type = "string")))
 	@ApiResponse(responseCode = "400", description = "Bad Request")
-	public String getAnswer(@PathVariable @Parameter(description = "The message to send to Ollama AI") String message) {
+	public ResponseEntity<String> getAnswer(
+			@PathVariable @Parameter(description = "The message to send to Ollama AI") String message) {
+		System.out.println("Received message: {}" + message);
 
-		return chatClient.prompt(message).call().content();
+		String response = chatClient.prompt(message).call().content();
 
+		System.out.println("Received response: {}" + response);
+
+		return ResponseEntity.ok(response);
 	}
 }
